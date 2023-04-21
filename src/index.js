@@ -1,68 +1,62 @@
 import './css/styles.css';
-import { fetchCountries } from './js/fetchCountries';
-import debounce from 'lodash.debounce';
 import Notiflix from 'notiflix';
+import axios from 'axios';
 
-const DEBOUNCE_DELAY = 300;
 
-const input = document.getElementById('search-box');
-const countryList = document.querySelector('.country-list');
-const countryInfo = document.querySelector('.country-info')
+const form = document.querySelector('.search-form');
+const input = document.querySelector('input');
+const btnSubmit = document.querySelector('button');
+const btnLoadMore = document.querySelector('.load-more');
+const gallery = document.querySelector('.gallery');
+// const photoCard = document.querySelector('.photo-card');
 
-input.addEventListener('input', debounce(searchCountries, DEBOUNCE_DELAY));
+form.addEventListener('submit', (event) => {
+    const inputValue = input.value;
 
-function searchCountries(event) {
     event.preventDefault();
-    const inputValue = event.target.value.trim();
-    if (!inputValue) {
-        countryList.innerHTML = '';
-    } if (!inputValue) {
-        countryInfo.innerHTML = '';
-    };
+    const getImages = async () => {
+        try {
+            const response = await axios.get(`https://pixabay.com/api/?key=35632992-e10a39a36f128534b3670000b&q=${inputValue}&image_type=photo&orientation=horizontal&safesearch=true`);
+              if (response.data.hits.length === 0) {
+               Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+            }
+            console.log(response.data);
+            listImages(response.data.hits);
+            
+         }
+        catch (error) {
+            console.log(error);
+          
+        }
+    }
+    getImages();
+    form.reset();
+});
 
-    fetchCountries(inputValue).then(country => {
-    if (country.length > 10) {
-        Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
-    } else if (country.length >= 2 && country.length <= 10) {
-        countryList.innerHTML = '';
-        countryInfo.innerHTML = '';
-        listCountry(country);
-    } else {
-        countryList.innerHTML = '';
-        countryInfo.innerHTML = '';
-        countryCard(country);
-    };
-}).catch((error) => {
-    Notiflix.Notify.failure('Oops, there is no country with that name');
-})
-};
 
-function listCountry(country) {
-    const markupCountryList = country.map(({ name, flags }) => {
-        return `<li class="list-country">
-    <img class="img-flag" src="${flags.svg}" alt="flag" width="50px">
-    <h2 class="country-name">${name.official}</h2>
-    </li>`
-    }).join('');
-    return countryList.insertAdjacentHTML('beforeend', markupCountryList);   
-};
+btnLoadMore.disabled = true;
 
-function countryCard(country) {
-    const markupCardCounyty = country.map(({ name, capital, population, flags, languages }) => {
-        const lang = Object.values(languages);
-        return `<div class="country-card">
-        <div class="county-main-info">
-           <img class="img-flag" src="${flags.svg}" alt="flag" width="50px">
-           <h2 class="country-name">${name.official}</h2>
-        </div>
-        <ul class="list-country-info">
-           <li class="item-country-info">${capital}</li>
-           <li class="item-country-info">${population}</li>
-           <li class="item-country-info">${lang}</li>
-        </ul>
-        </div>`
-        
-    }).join('');
-    return countryInfo.insertAdjacentHTML('beforeend', markupCardCounyty);
-};
+    function listImages(image) {
+        const markup = image.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+            return `<div class="photo-card">
+     <img src="${webformatURL}" alt="${tags}" loading="lazy" width="360px" />
+    <div class="info">
+       <p class="info-item">
+         <b>Likes: ${likes}</b>
+       </p>
+       <p class="info-item">
+         <b>Views: ${views}</b>
+        </p>
+       <p class="info-item">
+         <b>Comments: ${comments}</b>
+       </p>
+       <p class="info-item">
+         <b>Downloads: ${downloads}</b>
+       </p>
+     </div>
+   </div>`
+        }).join('');
+        return gallery.insertAdjacentHTML('beforeend', markup);
+    }
+
 
