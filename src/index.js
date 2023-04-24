@@ -24,7 +24,6 @@ btnSubmit.addEventListener('click', () => {
 form.addEventListener('submit', (event) => {
   event.preventDefault();
   getImages();
-  Notiflix.Notify.success(`We found 500 images for you!!!`)
 });
 
 const getImages = async () => {
@@ -56,19 +55,19 @@ const getImages = async () => {
     function listImages(image) {
         const markup = image.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
             return `<div class="photo-card">
-     <img src="${webformatURL}" href="${largeImageURL}" alt="${tags}" loading="lazy" width="360px" />
+     <img src="${webformatURL}" href="${largeImageURL}" alt="${tags}" loading="lazy" />
     <div class="info">
        <p class="info-item">
-         <b>Likes: ${likes}</b>
+         <b>Likes:</b>${likes}
        </p>
        <p class="info-item">
-         <b>Views: ${views}</b>
+         <b>Views: </b>${views}
         </p>
        <p class="info-item">
-         <b>Comments: ${comments}</b>
+         <b>Comments: </b>${comments}
        </p>
        <p class="info-item">
-         <b>Downloads: ${downloads}</b>
+         <b>Downloads: </b>${downloads}
        </p>
      </div>
    </div>`
