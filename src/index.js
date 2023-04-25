@@ -1,6 +1,9 @@
 import './css/styles.css';
 import Notiflix from 'notiflix';
 import axios from 'axios';
+import SimpleLightbox from 'simplelightbox';
+import "simplelightbox/dist/simple-lightbox.min.css";
+
 
 
 const form = document.querySelector('.search-form');
@@ -45,6 +48,7 @@ const getImages = async () => {
       btnLoadMore.classList.add('hidden');
     };   
     listImages(response.data.hits);
+    lightbox.refresh();
   }
   catch (error) {
     console.log(error);      
@@ -55,7 +59,9 @@ const getImages = async () => {
     function listImages(image) {
         const markup = image.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
             return `<div class="photo-card">
-     <img src="${webformatURL}" href="${largeImageURL}" alt="${tags}" loading="lazy" />
+       <a href="${largeImageURL}">
+     <img src="${webformatURL}"  alt="${tags}" loading="lazy" />
+       </a>
     <div class="info">
        <p class="info-item">
          <b>Likes:</b>${likes}
@@ -79,6 +85,10 @@ btnLoadMore.addEventListener('click', () => {
   page += 1;
   getImages();
   console.log(page);
+});
+
+const lightbox = new SimpleLightbox('a', {
+    captionsDelay: 250
 });
 
 
