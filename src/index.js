@@ -26,6 +26,7 @@ btnSubmit.addEventListener('click', () => {
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
+  page = 1;
   getImages();
 });
 
